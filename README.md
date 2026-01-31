@@ -125,23 +125,52 @@ include /data/nginx/custom/cloudflare_real_ips.conf;
 Note: Cloudflare periodically updates IP ranges. Refresh the contents of the include file from
 `https://www.cloudflare.com/ips/` whenever they publish changes.
 
-## Google Tag setup
-The app includes a placeholder Google tag snippet in `index.html`. Replace the placeholder
-measurement ID if you want tracking enabled.
+## Google Tag Manager (analytics)
+The app currently ships with a Google Tag Manager (GTM) container snippet in `index.html`
+(`GTM-5GXPK6JW`). If you want to use your own container, replace the ID in **both** the `<head>`
+script and the `<noscript>` iframe.
 
-1) In Google Tag Manager or Google Analytics, create a tag and copy your measurement ID (for
-   example, `G-XXXXXXX`).
-2) Update the existing snippet in the `<head>` of `index.html` and replace `G-PLACEHOLDER` with your ID:
+1) In Google Tag Manager, create (or select) a container and copy your GTM ID (for example,
+   `GTM-XXXXXXX`).
+2) Update the existing snippet in the `<head>` of `index.html`:
 ```
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-PLACEHOLDER"></script>
+<!-- Google Tag Manager -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-PLACEHOLDER');
+  (function (w, d, s, l, i) {
+    w[l] = w[l] || [];
+    w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+    var f = d.getElementsByTagName(s)[0],
+      j = d.createElement(s),
+      dl = l != "dataLayer" ? "&l=" + l : "";
+    j.async = true;
+    j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+    f.parentNode.insertBefore(j, f);
+  })(window, document, "script", "dataLayer", "GTM-XXXXXXX");
 </script>
+<!-- End Google Tag Manager -->
 ```
+3) Update the `<noscript>` iframe in the `<body>` of `index.html`:
+```
+<noscript>
+  <iframe
+    src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+    height="0"
+    width="0"
+    style="display: none; visibility: hidden"
+  ></iframe>
+</noscript>
+```
+
+If you do not want analytics, remove the GTM snippet entirely.
+
+## Clipboard API requirements
+The **Copy image** feature uses the Clipboard API. Browsers require a secure context, so this
+button works only on `https://` origins or `http://localhost`. If you open `index.html` directly
+from disk or serve it over plain HTTP, copying will fail—use **Download PNG** instead.
+
+## Privacy expectations
+If analytics are enabled, you should clearly disclose what is collected and why. A minimal
+privacy statement is included in `PRIVACY.md` for usage/popularity tracking.
 
 ## Dependencies
 - The QR code renderer is provided by the [`qrcodejs`](https://www.npmjs.com/package/qrcodejs) library.
