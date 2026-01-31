@@ -29,6 +29,12 @@ const defaultSettings = {
 
 let currentQRCode = null;
 
+const trackEvent = (name, params = {}) => {
+  if (typeof window.gtag === "function") {
+    window.gtag("event", name, params);
+  }
+};
+
 const renderMessage = (message) => {
   output.innerHTML = "";
   const paragraph = document.createElement("p");
@@ -62,7 +68,7 @@ const updateButtonState = () => {
   }
 };
 
-const renderQRCode = () => {
+const renderQRCode = (source = "manual") => {
   const value = urlInput.value.trim();
   if (!value) {
     renderMessage(emptyMessage);
@@ -90,6 +96,11 @@ const renderQRCode = () => {
   clearButton.disabled = false;
   copyButton.disabled = false;
   renderStatus("");
+  trackEvent("generate_qr", {
+    source,
+    size,
+    error_correction: errorSelect.value,
+  });
 };
 
 const getQRImageSource = () => {
@@ -130,6 +141,7 @@ const downloadQRCode = () => {
   link.href = source;
   link.download = `${sanitizeFilename(filenameInput.value)}.png`;
   link.click();
+  trackEvent("download_qr", { format: "png" });
 };
 
 const copyQRCode = async () => {
@@ -145,6 +157,7 @@ const copyQRCode = async () => {
       }),
     ]);
     renderStatus(copySuccessMessage);
+    trackEvent("copy_qr", { format: "png" });
   } catch (error) {
     renderStatus(copyErrorMessage);
   }
@@ -156,6 +169,7 @@ const clearQRCode = () => {
   renderMessage(emptyMessage);
   renderStatus("");
   updateButtonState();
+  trackEvent("clear_qr");
 };
 
 const resetOptions = () => {
@@ -168,10 +182,11 @@ const resetOptions = () => {
   initColorInputs();
   renderStatus("");
   if (currentQRCode && urlInput.value.trim()) {
-    renderQRCode();
+    renderQRCode("reset");
   } else {
     updateButtonState();
   }
+  trackEvent("reset_options");
 };
 
 const initColorInputs = () => {
@@ -192,7 +207,7 @@ const applyTheme = (theme) => {
     initColorInputs();
   }
   if (currentQRCode) {
-    renderQRCode();
+    renderQRCode("theme");
   }
 };
 
@@ -212,12 +227,12 @@ updateButtonState();
 const maybeAutoGenerate = () => {
   updateButtonState();
   if (autoGenerateToggle.checked && urlInput.value.trim()) {
-    renderQRCode();
+    renderQRCode("auto");
   }
 };
 
 urlInput.addEventListener("input", maybeAutoGenerate);
-generateButton.addEventListener("click", renderQRCode);
+generateButton.addEventListener("click", () => renderQRCode("manual"));
 downloadButton.addEventListener("click", downloadQRCode);
 copyButton.addEventListener("click", copyQRCode);
 clearButton.addEventListener("click", clearQRCode);
@@ -228,6 +243,7 @@ themeToggle.addEventListener("click", () => {
     : "dark";
   localStorage.setItem(themeStorageKey, nextTheme);
   applyTheme(nextTheme);
+  trackEvent("toggle_theme", { theme: nextTheme });
 });
 
 const markCustomColor = () => {
@@ -239,7 +255,7 @@ const markCustomColor = () => {
   input.addEventListener("input", () => {
     markCustomColor();
     if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
-      renderQRCode();
+      renderQRCode("update");
     }
   });
 });
@@ -247,9 +263,12 @@ const markCustomColor = () => {
 [sizeSelect, errorSelect].forEach((input) => {
   input.addEventListener("input", () => {
     if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
-      renderQRCode();
+      renderQRCode("update");
     }
   });
 });
 
-autoGenerateToggle.addEventListener("change", maybeAutoGenerate);
+autoGenerateToggle.addEventListener("change", (event) => {
+  maybeAutoGenerate();
+  trackEvent("toggle_auto_generate", { enabled: event.target.checked });
+});
