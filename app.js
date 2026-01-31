@@ -17,6 +17,8 @@ const output = document.querySelector(".output");
 const emptyMessage = "Enter a URL to generate a QR code.";
 const copySuccessMessage = "Copied QR code to your clipboard.";
 const copyErrorMessage = "Unable to copy. Try downloading instead.";
+const qrDependencyErrorMessage =
+  "QR code generator failed to load. Check your connection and refresh.";
 const themeStorageKey = "simpleqr-theme";
 const defaultSettings = {
   size: "180",
@@ -64,6 +66,10 @@ const renderQRCode = () => {
   const value = urlInput.value.trim();
   if (!value) {
     renderMessage(emptyMessage);
+    return;
+  }
+  if (typeof QRCode === "undefined") {
+    renderStatus(qrDependencyErrorMessage);
     return;
   }
 
