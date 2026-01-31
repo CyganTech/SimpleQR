@@ -69,6 +69,11 @@ button:hover {
   background: #2457c7;
 }
 
+button:disabled {
+  background: #9bb6f2;
+  cursor: not-allowed;
+}
+
 .output {
   min-height: 160px;
   border-radius: 12px;
@@ -80,6 +85,10 @@ button:hover {
   text-align: center;
   color: #6b6b73;
   padding: 16px;
+}
+
+.output p {
+  margin: 0;
 }
 
 @media (max-width: 520px) {
