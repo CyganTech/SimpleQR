@@ -7,8 +7,8 @@ SimpleQR is a lightweight, static web page for generating QR codes from URLs dir
 2. Enter a URL in the input field.
 3. Select **Generate** to render the QR code.
 
-## Alpine Linux LXC container (Nginx)
-Yes. Because the app is static, an Alpine Linux LXC container works well. The steps below assume
+## Alpine Linux deployment (Nginx)
+Because the app is static, an Alpine Linux LXC/container or VM works well. The steps below assume
 you are using OpenRC (the Alpine default) and serving with Nginx.
 
 ### 1) Install Nginx
@@ -47,54 +47,71 @@ rc-service nginx restart
 ### 4) (Optional) Expose the container
 Map a host port to the container's `8080` (via your LXC host), then browse to `http://<host>:<port>`.
 
-## Reliable Ubuntu VM deployment (Nginx Proxy Manager)
-This app is static, so the most reliable setup is to serve the files directly with Nginx and let your
-Nginx Proxy Manager instance route traffic to it.
+## Nginx Proxy Manager configuration
+Serve SimpleQR with the Alpine Nginx instance above, then let Nginx Proxy Manager (NPM) handle TLS
+and external traffic.
 
-### 1) Place the files on the VM
-```bash
-sudo mkdir -p /var/www/simpleqr
-sudo rsync -a --delete ./ /var/www/simpleqr/
-sudo chown -R www-data:www-data /var/www/simpleqr
-```
-
-### 2) Add a local Nginx site
-Create `/etc/nginx/sites-available/simpleqr`:
-```
-server {
-    listen 8080;
-    server_name _;
-
-    root /var/www/simpleqr;
-    index index.html;
-
-    location / {
-        try_files $uri $uri/ =404;
-    }
-}
-```
-
-Enable it:
-```bash
-sudo ln -s /etc/nginx/sites-available/simpleqr /etc/nginx/sites-enabled/simpleqr
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
-### 3) Proxy with Nginx Proxy Manager
-In Nginx Proxy Manager, create a new Proxy Host:
+### 1) Create a Proxy Host
+In NPM, create a new **Proxy Host**:
 - **Domain Names**: your desired hostname (for example, `qr.example.com`).
 - **Scheme**: `http`
-- **Forward Hostname / IP**: `127.0.0.1`
-- **Forward Port**: `8080`
+- **Forward Hostname / IP**: the Alpine host IP (or `127.0.0.1` if NPM runs on the same host).
+- **Forward Port**: `8080`.
 
 Optional: under **SSL**, request/enable a certificate and toggle **Force SSL**.
 
-### 4) Updating the app
-From the repo directory on the VM:
+### 2) Update files
+From the repo directory on the Alpine host:
 ```bash
-git pull
-sudo rsync -a --delete ./ /var/www/simpleqr/
+rsync -a --delete ./ /var/www/localhost/htdocs/simpleqr/
+```
+
+## Passing real client IPs (Cloudflare → NPM → Nginx)
+If your DNS is behind Cloudflare, your origin will see Cloudflare IPs unless you trust the
+`CF-Connecting-IP` header. Configure NPM to pass real IPs through to the upstream:
+
+1) In NPM, open your **Proxy Host** → **Advanced** and add:
+```
+real_ip_header CF-Connecting-IP;
+real_ip_recursive on;
+set_real_ip_from 173.245.48.0/20;
+set_real_ip_from 103.21.244.0/22;
+set_real_ip_from 103.22.200.0/22;
+set_real_ip_from 103.31.4.0/22;
+set_real_ip_from 141.101.64.0/18;
+set_real_ip_from 108.162.192.0/18;
+set_real_ip_from 190.93.240.0/20;
+set_real_ip_from 188.114.96.0/20;
+set_real_ip_from 197.234.240.0/22;
+set_real_ip_from 198.41.128.0/17;
+set_real_ip_from 162.158.0.0/15;
+set_real_ip_from 104.16.0.0/13;
+set_real_ip_from 104.24.0.0/14;
+set_real_ip_from 172.64.0.0/13;
+set_real_ip_from 131.0.72.0/22;
+```
+
+2) Restart NPM so it reloads the configuration.
+
+Note: Cloudflare periodically updates IP ranges. If you want to keep the list current, replace the
+`set_real_ip_from` list with an include file that you refresh from
+`https://www.cloudflare.com/ips/`.
+
+## Google Tag setup
+Add your Google tag (gtag.js) snippet to `index.html` so page views are tracked.
+
+1) In Google Tag Manager or Google Analytics, create a tag and copy your measurement ID (for
+   example, `G-XXXXXXX`).
+2) Add the snippet below to the `<head>` of `index.html` and replace `G-XXXXXXX` with your ID:
+```
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXX');
+</script>
 ```
 
 ## Dependencies
