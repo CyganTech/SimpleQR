@@ -14,7 +14,7 @@ const resetButton = document.getElementById("reset-button");
 const statusMessage = document.querySelector(".status");
 const output = document.querySelector(".output");
 
-const emptyMessage = "Enter a URL to generate a QR code.";
+const emptyMessage = "Enter text or a URL to generate a QR code.";
 const copySuccessMessage = "Copied QR code to your clipboard.";
 const copyErrorMessage = "Unable to copy. Try downloading instead.";
 const qrDependencyErrorMessage =
