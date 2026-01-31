@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SimpleQR</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card">
+        <h1>Generate a QR Code</h1>
+        <label for="url-input">URL</label>
+        <div class="form-row">
+          <input
+            id="url-input"
+            name="url"
+            type="url"
+            placeholder="https://example.com"
+            autocomplete="url"
+            required
+          />
+          <button type="button">Generate</button>
+        </div>
+        <div class="output" aria-live="polite">
+          <p>Your QR code will appear here.</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
