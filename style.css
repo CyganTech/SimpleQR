@@ -72,6 +72,11 @@ label {
   gap: 16px;
 }
 
+.tagline {
+  margin: 0;
+  color: var(--muted);
+}
+
 .form-row {
   display: grid;
   gap: 12px;

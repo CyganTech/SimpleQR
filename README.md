@@ -1,9 +1,11 @@
 # SimpleQR
 
-SimpleQR is a lightweight, static web page for generating QR codes from URLs directly in the browser.
+SimpleQR is a lightweight, static web page for generating QR codes from text or URLs directly in
+the browser. It does exactly what it says: what you type is what you get, with no hidden
+passthrough links.
 
 ## Features
-- URL-based QR generation with configurable size and error correction.
+- Text or URL-based QR generation with configurable size and error correction.
 - Custom foreground/background colors.
 - Auto-generate mode while typing.
 - Download the QR code as a PNG or copy it to the clipboard.
@@ -11,16 +13,16 @@ SimpleQR is a lightweight, static web page for generating QR codes from URLs dir
 
 ## Usage
 1. Open `index.html` in your web browser (double-click the file or serve it with any static web server).
-2. Enter a URL in the input field.
+2. Enter text or a URL in the input field.
 3. Choose your options (size, error correction, colors, filename).
 4. Select **Generate** to render the QR code.
 5. Use **Download PNG** or **Copy image** to save or share the QR code.
 
 ### Controls overview
-- **Generate**: Creates a QR code from the current URL.
-- **Auto-generate while typing**: Regenerates automatically as the URL or options change.
+- **Generate**: Creates a QR code from the current text or URL.
+- **Auto-generate while typing**: Regenerates automatically as the text or options change.
 - **Reset options**: Restores default size, error correction, filename, and colors.
-- **Clear**: Clears the current URL and QR code output.
+- **Clear**: Clears the current text and QR code output.
 - **Dark mode**: Toggles the theme (stored in local storage).
 
 ## Alpine Linux deployment (Nginx)

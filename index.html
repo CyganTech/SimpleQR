@@ -17,27 +17,27 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QR Code Generator | SimpleQR</title>
+    <title>SimpleQR | No-frills QR Code Generator</title>
     <meta
       name="description"
-      content="SimpleQR is a fast, free QR Code Generator for URLs. Customize size, colors, and error correction, then download or copy your QR code instantly."
+      content="SimpleQR is a no-frills QR code generator. What you type is what you get, with no hidden passthrough links—just clean QR codes you can customize and download."
     />
     <meta
       name="keywords"
       content="QR Code Generator, QR code maker, QR code creator, free QR code, QR generator, SimpleQR"
     />
     <meta name="robots" content="index, follow" />
-    <meta property="og:title" content="QR Code Generator | SimpleQR" />
+    <meta property="og:title" content="SimpleQR | No-frills QR Code Generator" />
     <meta
       property="og:description"
-      content="Create QR codes in seconds with SimpleQR. Customize size, colors, and error correction, then download or copy your code."
+      content="SimpleQR does exactly what it says: generate clean QR codes with no hidden passthrough links. What you type is what you get."
     />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="QR Code Generator | SimpleQR" />
+    <meta name="twitter:title" content="SimpleQR | No-frills QR Code Generator" />
     <meta
       name="twitter:description"
-      content="Generate QR codes fast with SimpleQR. Customize size, colors, and error correction, then download or copy."
+      content="SimpleQR does exactly what it says: generate clean QR codes with no hidden passthrough links. What you type is what you get."
     />
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -45,19 +45,23 @@
     <main class="page">
       <section class="card">
         <div class="card-header">
-          <h1>Generate a QR Code</h1>
+          <h1>SimpleQR</h1>
           <button id="theme-toggle" class="ghost-button" type="button">
             Dark mode
           </button>
         </div>
-        <label for="url-input">URL</label>
+        <p class="tagline">
+          SimpleQR is a no-frills QR code generator. It does exactly what it
+          says: no hidden passthrough links. What you type is what you get.
+        </p>
+        <label for="url-input">Text or URL</label>
         <div class="form-row">
           <input
             id="url-input"
-            name="url"
-            type="url"
-            placeholder="https://example.com"
-            autocomplete="url"
+            name="payload"
+            type="text"
+            placeholder="Type text or paste a URL"
+            autocomplete="off"
             required
           />
           <button id="generate-button" type="button">Generate</button>
