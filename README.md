@@ -2,10 +2,26 @@
 
 SimpleQR is a lightweight, static web page for generating QR codes from URLs directly in the browser.
 
+## Features
+- URL-based QR generation with configurable size and error correction.
+- Custom foreground/background colors.
+- Auto-generate mode while typing.
+- Download the QR code as a PNG or copy it to the clipboard.
+- Light/dark theme toggle with automatic preference detection.
+
 ## Usage
 1. Open `index.html` in your web browser (double-click the file or serve it with any static web server).
 2. Enter a URL in the input field.
-3. Select **Generate** to render the QR code.
+3. Choose your options (size, error correction, colors, filename).
+4. Select **Generate** to render the QR code.
+5. Use **Download PNG** or **Copy image** to save or share the QR code.
+
+### Controls overview
+- **Generate**: Creates a QR code from the current URL.
+- **Auto-generate while typing**: Regenerates automatically as the URL or options change.
+- **Reset options**: Restores default size, error correction, filename, and colors.
+- **Clear**: Clears the current URL and QR code output.
+- **Dark mode**: Toggles the theme (stored in local storage).
 
 ## Alpine Linux deployment (Nginx)
 Because the app is static, an Alpine Linux LXC/container or VM works well. The steps below assume
@@ -106,22 +122,23 @@ Then download the current IPv4/IPv6 ranges into that include file whenever Cloud
 updates.
 
 ## Google Tag setup
-Add your Google tag (gtag.js) snippet to `index.html` so page views are tracked.
+The app includes a placeholder Google tag snippet in `index.html`. Replace the placeholder
+measurement ID if you want tracking enabled.
 
 1) In Google Tag Manager or Google Analytics, create a tag and copy your measurement ID (for
    example, `G-XXXXXXX`).
-2) Add the snippet below to the `<head>` of `index.html` and replace `G-XXXXXXX` with your ID:
+2) Update the existing snippet in the `<head>` of `index.html` and replace `G-PLACEHOLDER` with your ID:
 ```
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PLACEHOLDER"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-XXXXXXX');
+  gtag('config', 'G-PLACEHOLDER');
 </script>
 ```
 
 ## Dependencies
 - The QR code renderer is provided by the [`qrcodejs`](https://www.npmjs.com/package/qrcodejs) library.
-- It is loaded via CDN from `https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js` in `index.html`, so the page requires network access when first loaded. If you need offline usage, download the library and update the script tag to point to a local copy.
+- It is loaded via CDN from `https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js` in `index.html`. If the CDN fails, the page falls back to the bundled `qrcode.min.js`. For fully offline usage, keep the local file and remove the CDN script tag.
