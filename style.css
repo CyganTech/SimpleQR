@@ -78,7 +78,8 @@ label {
   grid-template-columns: 1fr auto;
 }
 
-input {
+input,
+select {
   width: 100%;
   padding: 12px 14px;
   border-radius: 10px;
@@ -86,6 +87,11 @@ input {
   font-size: 1rem;
   background: transparent;
   color: inherit;
+}
+
+input[type="color"] {
+  padding: 6px;
+  height: 44px;
 }
 
 button {
@@ -123,6 +129,43 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.options {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin: 0;
+}
+
+.options legend {
+  font-weight: 600;
+  padding: 0 6px;
+}
+
+.options label {
+  font-size: 0.9rem;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  grid-column: 1 / -1;
+  font-weight: 500;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+.status {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
 .output {
   min-height: 160px;
   border-radius: 12px;
@@ -153,6 +196,10 @@ button:disabled {
   .actions {
     flex-direction: column;
     width: 100%;
+  }
+
+  .options {
+    grid-template-columns: 1fr;
   }
 
   button {
