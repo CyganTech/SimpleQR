@@ -9,7 +9,12 @@
   <body>
     <main class="page">
       <section class="card">
-        <h1>Generate a QR Code</h1>
+        <div class="card-header">
+          <h1>Generate a QR Code</h1>
+          <button id="theme-toggle" class="ghost-button" type="button">
+            Dark mode
+          </button>
+        </div>
         <label for="url-input">URL</label>
         <div class="form-row">
           <input
@@ -21,6 +26,14 @@
             required
           />
           <button id="generate-button" type="button">Generate</button>
+        </div>
+        <div class="actions">
+          <button id="download-button" type="button" disabled>
+            Download PNG
+          </button>
+          <button id="clear-button" class="ghost-button" type="button" disabled>
+            Clear
+          </button>
         </div>
         <div class="output" aria-live="polite">
           <p>Your QR code will appear here.</p>
