@@ -7,6 +7,46 @@ SimpleQR is a lightweight, static web page for generating QR codes from URLs dir
 2. Enter a URL in the input field.
 3. Select **Generate** to render the QR code.
 
+## Alpine Linux LXC container (Nginx)
+Yes. Because the app is static, an Alpine Linux LXC container works well. The steps below assume
+you are using OpenRC (the Alpine default) and serving with Nginx.
+
+### 1) Install Nginx
+```bash
+apk add --no-cache nginx
+rc-update add nginx default
+```
+
+### 2) Deploy the files
+```bash
+mkdir -p /var/www/localhost/htdocs/simpleqr
+rsync -a --delete ./ /var/www/localhost/htdocs/simpleqr/
+```
+
+### 3) Add an Nginx site
+Create `/etc/nginx/http.d/simpleqr.conf`:
+```
+server {
+    listen 8080;
+    server_name _;
+
+    root /var/www/localhost/htdocs/simpleqr;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+Restart Nginx:
+```bash
+rc-service nginx restart
+```
+
+### 4) (Optional) Expose the container
+Map a host port to the container's `8080` (via your LXC host), then browse to `http://<host>:<port>`.
+
 ## Reliable Ubuntu VM deployment (Nginx Proxy Manager)
 This app is static, so the most reliable setup is to serve the files directly with Nginx and let your
 Nginx Proxy Manager instance route traffic to it.
