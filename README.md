@@ -3,7 +3,7 @@
 SimpleQR is a lightweight, static web page for generating QR codes from URLs directly in the browser.
 
 ## Usage
-1. Open `index.html` in your web browser.
+1. Open `index.html` in your web browser (double-click the file or serve it with any static web server).
 2. Enter a URL in the input field.
 3. Select **Generate** to render the QR code.
 
@@ -45,7 +45,8 @@ rc-service nginx restart
 ```
 
 ### 4) (Optional) Expose the container
-Map a host port to the container's `8080` (via your LXC host), then browse to `http://<host>:<port>`.
+Map a host port to the container's `8080` (via your LXC host), then browse to
+`http://<host>:<port>`.
 
 ## Nginx Proxy Manager configuration
 Serve SimpleQR with the Alpine Nginx instance above, then let Nginx Proxy Manager (NPM) handle TLS
@@ -95,7 +96,14 @@ set_real_ip_from 131.0.72.0/22;
 
 Note: Cloudflare periodically updates IP ranges. If you want to keep the list current, replace the
 `set_real_ip_from` list with an include file that you refresh from
-`https://www.cloudflare.com/ips/`.
+`https://www.cloudflare.com/ips/`. For example:
+```
+real_ip_header CF-Connecting-IP;
+real_ip_recursive on;
+include /etc/nginx/conf.d/cloudflare_real_ips.conf;
+```
+Then download the current IPv4/IPv6 ranges into that include file whenever Cloudflare publishes
+updates.
 
 ## Google Tag setup
 Add your Google tag (gtag.js) snippet to `index.html` so page views are tracked.
