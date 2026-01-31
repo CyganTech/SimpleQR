@@ -27,14 +27,50 @@
           />
           <button id="generate-button" type="button">Generate</button>
         </div>
+        <fieldset class="options">
+          <legend>Options</legend>
+          <label for="size-select">Size</label>
+          <select id="size-select" name="size">
+            <option value="140">Small (140px)</option>
+            <option value="180" selected>Medium (180px)</option>
+            <option value="220">Large (220px)</option>
+            <option value="280">Extra large (280px)</option>
+          </select>
+          <label for="error-select">Error correction</label>
+          <select id="error-select" name="error">
+            <option value="L">Low (7%)</option>
+            <option value="M" selected>Medium (15%)</option>
+            <option value="Q">Quartile (25%)</option>
+            <option value="H">High (30%)</option>
+          </select>
+          <label for="foreground-color">Foreground</label>
+          <input id="foreground-color" name="foreground" type="color" />
+          <label for="background-color">Background</label>
+          <input id="background-color" name="background" type="color" />
+          <label for="filename-input">Filename</label>
+          <input
+            id="filename-input"
+            name="filename"
+            type="text"
+            placeholder="simpleqr"
+          />
+          <label class="checkbox-row" for="auto-generate">
+            <input id="auto-generate" name="auto-generate" type="checkbox" />
+            Auto-generate while typing
+          </label>
+        </fieldset>
         <div class="actions">
           <button id="download-button" type="button" disabled>
             Download PNG
+          </button>
+          <button id="copy-button" class="ghost-button" type="button" disabled>
+            Copy image
           </button>
           <button id="clear-button" class="ghost-button" type="button" disabled>
             Clear
           </button>
         </div>
+        <p class="status" aria-live="polite"></p>
         <div class="output" aria-live="polite">
           <p>Your QR code will appear here.</p>
         </div>
