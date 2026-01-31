@@ -85,9 +85,16 @@ rsync -a --delete ./ /var/www/localhost/htdocs/simpleqr/
 
 ## Passing real client IPs (Cloudflare → NPM → Nginx)
 If your DNS is behind Cloudflare, your origin will see Cloudflare IPs unless you trust the
-`CF-Connecting-IP` header. Configure NPM to pass real IPs through to the upstream:
+`CF-Connecting-IP` header. When Nginx Proxy Manager (NPM) runs in Docker, add the real IP settings
+via each Proxy Host’s **Advanced** config and include a file stored on the `/data` volume so it
+survives container upgrades.
 
-1) In NPM, open your **Proxy Host** → **Advanced** and add:
+1) On the NPM host, create a file for Cloudflare IPs that is mounted into the container:
+```
+/data/nginx/custom/cloudflare_real_ips.conf
+```
+
+2) Add the Cloudflare real IP settings to that file (include IPv4 and IPv6 ranges):
 ```
 real_ip_header CF-Connecting-IP;
 real_ip_recursive on;
@@ -108,18 +115,15 @@ set_real_ip_from 172.64.0.0/13;
 set_real_ip_from 131.0.72.0/22;
 ```
 
-2) Restart NPM so it reloads the configuration.
+3) In NPM, open your **Proxy Host** → **Advanced** and add:
+```
+include /data/nginx/custom/cloudflare_real_ips.conf;
+```
 
-Note: Cloudflare periodically updates IP ranges. If you want to keep the list current, replace the
-`set_real_ip_from` list with an include file that you refresh from
-`https://www.cloudflare.com/ips/`. For example:
-```
-real_ip_header CF-Connecting-IP;
-real_ip_recursive on;
-include /etc/nginx/conf.d/cloudflare_real_ips.conf;
-```
-Then download the current IPv4/IPv6 ranges into that include file whenever Cloudflare publishes
-updates.
+4) Restart the NPM container so it reloads the configuration.
+
+Note: Cloudflare periodically updates IP ranges. Refresh the contents of the include file from
+`https://www.cloudflare.com/ips/` whenever they publish changes.
 
 ## Google Tag setup
 The app includes a placeholder Google tag snippet in `index.html`. Replace the placeholder
