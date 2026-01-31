@@ -10,6 +10,7 @@ const backgroundColor = document.getElementById("background-color");
 const filenameInput = document.getElementById("filename-input");
 const autoGenerateToggle = document.getElementById("auto-generate");
 const copyButton = document.getElementById("copy-button");
+const resetButton = document.getElementById("reset-button");
 const statusMessage = document.querySelector(".status");
 const output = document.querySelector(".output");
 
@@ -17,6 +18,12 @@ const emptyMessage = "Enter a URL to generate a QR code.";
 const copySuccessMessage = "Copied QR code to your clipboard.";
 const copyErrorMessage = "Unable to copy. Try downloading instead.";
 const themeStorageKey = "simpleqr-theme";
+const defaultSettings = {
+  size: "180",
+  error: "M",
+  filename: "",
+  autoGenerate: false,
+};
 
 let currentQRCode = null;
 
@@ -145,6 +152,22 @@ const clearQRCode = () => {
   updateButtonState();
 };
 
+const resetOptions = () => {
+  sizeSelect.value = defaultSettings.size;
+  errorSelect.value = defaultSettings.error;
+  filenameInput.value = defaultSettings.filename;
+  autoGenerateToggle.checked = defaultSettings.autoGenerate;
+  delete foregroundColor.dataset.custom;
+  delete backgroundColor.dataset.custom;
+  initColorInputs();
+  renderStatus("");
+  if (currentQRCode && urlInput.value.trim()) {
+    renderQRCode();
+  } else {
+    updateButtonState();
+  }
+};
+
 const initColorInputs = () => {
   const styles = getComputedStyle(document.body);
   if (!foregroundColor.dataset.custom) {
@@ -192,6 +215,7 @@ generateButton.addEventListener("click", renderQRCode);
 downloadButton.addEventListener("click", downloadQRCode);
 copyButton.addEventListener("click", copyQRCode);
 clearButton.addEventListener("click", clearQRCode);
+resetButton.addEventListener("click", resetOptions);
 themeToggle.addEventListener("click", () => {
   const nextTheme = document.body.classList.contains("dark-mode")
     ? "light"
