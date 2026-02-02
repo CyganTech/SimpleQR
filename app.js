@@ -3,6 +3,7 @@ const generateButton = document.getElementById("generate-button");
 const downloadButton = document.getElementById("download-button");
 const clearButton = document.getElementById("clear-button");
 const themeToggle = document.getElementById("theme-toggle");
+const themeToggleLabel = document.getElementById("theme-toggle-label");
 const sizeSelect = document.getElementById("size-select");
 const errorSelect = document.getElementById("error-select");
 const foregroundColor = document.getElementById("foreground-color");
@@ -202,7 +203,10 @@ const initColorInputs = () => {
 const applyTheme = (theme) => {
   const isDark = theme === "dark";
   document.body.classList.toggle("dark-mode", isDark);
-  themeToggle.textContent = isDark ? "Light mode" : "Dark mode";
+  const label = isDark ? "Light mode" : "Dark mode";
+  themeToggle.setAttribute("aria-label", label);
+  themeToggle.setAttribute("title", label);
+  themeToggleLabel.textContent = label;
   if (!foregroundColor.dataset.custom || !backgroundColor.dataset.custom) {
     initColorInputs();
   }

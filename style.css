@@ -134,6 +134,55 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+.icon-button--primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.icon-button .icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+}
+
+.icon-button svg {
+  width: 100%;
+  height: 100%;
+}
+
+.theme-icon .icon-sun {
+  display: none;
+}
+
+body.dark-mode .theme-icon .icon-moon {
+  display: none;
+}
+
+body.dark-mode .theme-icon .icon-sun {
+  display: inline;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 .options {
   display: grid;
   gap: 12px;
