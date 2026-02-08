@@ -11,6 +11,7 @@ const backgroundColor = document.getElementById("background-color");
 const filenameInput = document.getElementById("filename-input");
 const autoGenerateToggle = document.getElementById("auto-generate");
 const copyButton = document.getElementById("copy-button");
+const copyTextButton = document.getElementById("copy-text-button");
 const resetButton = document.getElementById("reset-button");
 const statusMessage = document.querySelector(".status");
 const output = document.querySelector(".output");
@@ -18,6 +19,8 @@ const output = document.querySelector(".output");
 const emptyMessage = "Enter text or a URL to generate a QR code.";
 const copySuccessMessage = "Copied QR code to your clipboard.";
 const copyErrorMessage = "Unable to copy. Try downloading instead.";
+const copyTextSuccessMessage = "Copied text to your clipboard.";
+const copyTextErrorMessage = "Unable to copy text. Please try again.";
 const qrDependencyErrorMessage =
   "QR code generator failed to load. Check your connection and refresh.";
 const themeStorageKey = "simpleqr-theme";
@@ -64,6 +67,7 @@ const updateButtonState = () => {
   clearButton.disabled = !hasValue && !currentQRCode;
   downloadButton.disabled = !currentQRCode;
   copyButton.disabled = !currentQRCode;
+  copyTextButton.disabled = !hasValue;
   if (!hasValue && !currentQRCode) {
     renderMessage(emptyMessage);
   }
@@ -198,6 +202,21 @@ const copyQRCode = async () => {
   }
 };
 
+const copyInputText = async () => {
+  const value = urlInput.value.trim();
+  if (!value) {
+    renderStatus(emptyMessage);
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(value);
+    renderStatus(copyTextSuccessMessage);
+    trackEvent("copy_text", { length: value.length });
+  } catch (error) {
+    renderStatus(copyTextErrorMessage);
+  }
+};
+
 const clearQRCode = () => {
   urlInput.value = "";
   currentQRCode = null;
@@ -280,6 +299,7 @@ filenameInput.addEventListener("input", () => {
 generateButton.addEventListener("click", () => renderQRCode("manual"));
 downloadButton.addEventListener("click", downloadQRCode);
 copyButton.addEventListener("click", copyQRCode);
+copyTextButton.addEventListener("click", copyInputText);
 clearButton.addEventListener("click", clearQRCode);
 resetButton.addEventListener("click", resetOptions);
 themeToggle.addEventListener("click", () => {
