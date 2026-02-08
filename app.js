@@ -193,10 +193,10 @@ const resetOptions = () => {
 const initColorInputs = () => {
   const styles = getComputedStyle(document.body);
   if (!foregroundColor.dataset.custom) {
-    foregroundColor.value = styles.getPropertyValue("--text").trim();
+    foregroundColor.value = styles.getPropertyValue("--qr-foreground").trim();
   }
   if (!backgroundColor.dataset.custom) {
-    backgroundColor.value = styles.getPropertyValue("--card-bg").trim();
+    backgroundColor.value = styles.getPropertyValue("--qr-background").trim();
   }
 };
 
