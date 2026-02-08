@@ -133,6 +133,40 @@ const sanitizeFilename = (value) => {
   return cleaned.length > 0 ? cleaned : "simpleqr";
 };
 
+const isFilenameCustomized = () => filenameInput.dataset.customized === "true";
+
+const deriveFilename = (value) => {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "simpleqr";
+  }
+  let base = "";
+  if (!/\s/.test(trimmed)) {
+    try {
+      base = new URL(trimmed).hostname;
+    } catch (error) {
+      try {
+        base = new URL(`https://${trimmed}`).hostname;
+      } catch (innerError) {
+        base = "";
+      }
+    }
+  }
+  if (!base) {
+    base = trimmed;
+  }
+  const cleaned = base.replace(/[<>:"/\\|?*\u0000-\u001F]/g, "").trim();
+  const shortened = cleaned.slice(0, 20);
+  return shortened.length > 0 ? shortened : "simpleqr";
+};
+
+const updateFilenameFromInput = () => {
+  if (isFilenameCustomized()) {
+    return;
+  }
+  filenameInput.value = deriveFilename(urlInput.value);
+};
+
 const downloadQRCode = () => {
   const source = getQRImageSource();
   if (!source) {
@@ -177,6 +211,7 @@ const resetOptions = () => {
   sizeSelect.value = defaultSettings.size;
   errorSelect.value = defaultSettings.error;
   filenameInput.value = defaultSettings.filename;
+  delete filenameInput.dataset.customized;
   autoGenerateToggle.checked = defaultSettings.autoGenerate;
   delete foregroundColor.dataset.custom;
   delete backgroundColor.dataset.custom;
@@ -235,7 +270,13 @@ const maybeAutoGenerate = () => {
   }
 };
 
-urlInput.addEventListener("input", maybeAutoGenerate);
+urlInput.addEventListener("input", () => {
+  updateFilenameFromInput();
+  maybeAutoGenerate();
+});
+filenameInput.addEventListener("input", () => {
+  filenameInput.dataset.customized = "true";
+});
 generateButton.addEventListener("click", () => renderQRCode("manual"));
 downloadButton.addEventListener("click", downloadQRCode);
 copyButton.addEventListener("click", copyQRCode);
