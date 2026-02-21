@@ -54,6 +54,16 @@ const defaultSettings = {
 
 let currentQRCode = null;
 
+const debounce = (callback, delay = 200) => {
+  let timeoutId;
+  return (...args) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+};
+
 const trackEvent = (name, params = {}) => {
   if (typeof window.gtag === "function") {
     window.gtag("event", name, params);
@@ -380,6 +390,18 @@ const maybeAutoGenerate = () => {
   }
 };
 
+const debouncedAutoGenerate = debounce(() => {
+  if (autoGenerateToggle.checked && urlInput.value.trim()) {
+    renderQRCode("auto");
+  }
+}, 200);
+
+const debouncedOptionRegenerate = debounce(() => {
+  if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
+    renderQRCode("update");
+  }
+}, 150);
+
 const handleManualGenerate = () => {
   if (!urlInput.value.trim()) {
     updateButtonState();
@@ -426,7 +448,10 @@ const initializeApp = () => {
 
   attachEvent(urlInput, "input", () => {
     updateFilenameFromInput();
-    maybeAutoGenerate();
+    updateButtonState();
+    if (autoGenerateToggle.checked && urlInput.value.trim()) {
+      debouncedAutoGenerate();
+    }
   });
   attachEvent(filenameInput, "input", () => {
     filenameInput.dataset.customized = "true";
@@ -460,17 +485,13 @@ const initializeApp = () => {
   [foregroundColor, backgroundColor].forEach((input) => {
     attachEvent(input, "input", () => {
       markCustomColor(input);
-      if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
-        renderQRCode("update");
-      }
+      debouncedOptionRegenerate();
     });
   });
 
   [sizeSelect, errorSelect].forEach((input) => {
     attachEvent(input, "input", () => {
-      if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
-        renderQRCode("update");
-      }
+      debouncedOptionRegenerate();
     });
   });
 
