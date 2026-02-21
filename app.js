@@ -44,6 +44,8 @@ const copyTextErrorMessage =
   "Unable to copy text. Use HTTPS or localhost, or select and copy manually.";
 const qrDependencyErrorMessage =
   "QR code generator failed to load. Check your connection and refresh.";
+const qrRenderErrorMessage =
+  "Unable to generate QR code because the input is too large or invalid. Try shortening the content or lowering QR complexity (size/error correction).";
 const themeStorageKey = "simpleqr-theme";
 const defaultSettings = {
   size: "180",
@@ -146,14 +148,27 @@ const renderQRCode = (source = "manual") => {
   output.append(qrContainer);
   const size = getQRSize();
   const { colorDark, colorLight } = getQRColors();
-  currentQRCode = new QRCode(qrContainer, {
-    text: value,
-    width: size,
-    height: size,
-    colorDark,
-    colorLight,
-    correctLevel: getErrorCorrectionLevel(),
-  });
+  try {
+    currentQRCode = new QRCode(qrContainer, {
+      text: value,
+      width: size,
+      height: size,
+      colorDark,
+      colorLight,
+      correctLevel: getErrorCorrectionLevel(),
+    });
+  } catch (error) {
+    currentQRCode = null;
+    renderMessage(emptyMessage, false);
+    renderStatus(qrRenderErrorMessage);
+    updateButtonState();
+    trackEvent("generate_qr_error", {
+      source,
+      size,
+      error_correction: errorSelect.value,
+    });
+    return;
+  }
 
   const description = buildAccessibleQRDescription(value);
   const srDescription = document.createElement("p");
