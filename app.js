@@ -80,6 +80,13 @@ const renderMessage = (message, announce = false) => {
   }
 };
 
+const buildAccessibleQRDescription = (value) => {
+  const normalized = value.replace(/\s+/g, " ").trim();
+  const shortened =
+    normalized.length > 120 ? `${normalized.slice(0, 117)}...` : normalized;
+  return `QR code generated for: ${shortened}`;
+};
+
 const renderStatus = (message) => {
   if (statusMessage) {
     statusMessage.textContent = message;
@@ -147,11 +154,23 @@ const renderQRCode = (source = "manual") => {
     colorLight,
     correctLevel: getErrorCorrectionLevel(),
   });
+
+  const description = buildAccessibleQRDescription(value);
+  const srDescription = document.createElement("p");
+  srDescription.className = "sr-only";
+  srDescription.textContent = description;
+  output.append(srDescription);
+
+  const generatedImage = qrContainer.querySelector("img");
+  if (generatedImage) {
+    generatedImage.alt = description;
+  }
+
   setDisabled(downloadButton, false);
   setDisabled(clearOutputButton, false);
   setDisabled(clearInputButton, false);
   setDisabled(copyButton, false);
-  renderStatus("");
+  renderStatus(description);
   trackEvent("generate_qr", {
     source,
     size,
