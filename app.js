@@ -60,11 +60,14 @@ const trackEvent = (name, params = {}) => {
   }
 };
 
-const renderMessage = (message) => {
+const renderMessage = (message, announce = false) => {
   output.innerHTML = "";
   const paragraph = document.createElement("p");
   paragraph.textContent = message;
   output.append(paragraph);
+  if (announce) {
+    renderStatus(message);
+  }
 };
 
 const renderStatus = (message) => {
@@ -106,14 +109,14 @@ const updateButtonState = () => {
   setDisabled(copyButton, !hasQRCode);
   setDisabled(copyTextButton, !hasValue);
   if (!hasValue && !hasQRCode) {
-    renderMessage(emptyMessage);
+    renderMessage(emptyMessage, true);
   }
 };
 
 const renderQRCode = (source = "manual") => {
   const value = urlInput.value.trim();
   if (!value) {
-    renderMessage(emptyMessage);
+    renderMessage(emptyMessage, true);
     return;
   }
   if (typeof QRCode === "undefined") {
@@ -283,7 +286,7 @@ const clearOutputOnly = () => {
   }
 
   currentQRCode = null;
-  renderMessage(emptyMessage);
+  renderMessage(emptyMessage, false);
   renderStatus("Cleared rendered QR code.");
   updateButtonState();
   trackEvent("clear_output_only");
@@ -302,7 +305,7 @@ const clearInputAndOutput = () => {
   urlInput.value = "";
   currentQRCode = null;
   updateFilenameFromInput();
-  renderMessage(emptyMessage);
+  renderMessage(emptyMessage, false);
   renderStatus("Cleared input text and rendered QR code.");
   updateButtonState();
   trackEvent("clear_input_and_output", {
@@ -418,7 +421,7 @@ const initializeApp = () => {
 
   initColorInputs();
 
-  renderMessage(emptyMessage);
+  renderMessage(emptyMessage, false);
   updateButtonState();
 
   attachEvent(urlInput, "input", () => {
