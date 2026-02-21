@@ -90,6 +90,33 @@ body {
   color: var(--primary-hover);
 }
 
+.seo-content {
+  width: min(520px, 100%);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card-bg), var(--bg) 18%);
+}
+
+.seo-content h2,
+.seo-content h3 {
+  margin: 0;
+}
+
+.seo-content h2 {
+  font-size: 1.2rem;
+}
+
+.seo-content h3 {
+  margin-top: 12px;
+  font-size: 1rem;
+}
+
+.seo-content p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
 h1 {
   font-size: 1.5rem;
   margin: 0;
@@ -322,6 +349,10 @@ input[type="color"]:focus-visible {
   .card {
     padding: 18px;
     gap: 12px;
+  }
+
+  .seo-content {
+    padding: 16px;
   }
 
   .card-header {
