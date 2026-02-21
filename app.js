@@ -386,9 +386,13 @@ const handleManualGenerate = () => {
   updateButtonState();
 };
 
-const markCustomColor = () => {
-  foregroundColor.dataset.custom = "true";
-  backgroundColor.dataset.custom = "true";
+const markCustomColor = (input) => {
+  if (input === foregroundColor) {
+    foregroundColor.dataset.custom = "true";
+  }
+  if (input === backgroundColor) {
+    backgroundColor.dataset.custom = "true";
+  }
 };
 
 const initializeApp = () => {
@@ -452,7 +456,7 @@ const initializeApp = () => {
 
   [foregroundColor, backgroundColor].forEach((input) => {
     attachEvent(input, "input", () => {
-      markCustomColor();
+      markCustomColor(input);
       if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
         renderQRCode("update");
       }
