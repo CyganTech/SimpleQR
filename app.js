@@ -17,6 +17,24 @@ const resetButton = document.getElementById("reset-button");
 const statusMessage = document.querySelector(".status");
 const output = document.querySelector(".output");
 
+const requiredElements = [
+  ["#url-input", urlInput],
+  ["#generate-button", generateButton],
+  ["#download-button", downloadButton],
+  ["#clear-output-button", clearOutputButton],
+  ["#clear-input-button", clearInputButton],
+  ["#size-select", sizeSelect],
+  ["#error-select", errorSelect],
+  ["#foreground-color", foregroundColor],
+  ["#background-color", backgroundColor],
+  ["#filename-input", filenameInput],
+  ["#auto-generate", autoGenerateToggle],
+  ["#copy-button", copyButton],
+  ["#copy-text-button", copyTextButton],
+  ["#reset-button", resetButton],
+  [".output", output],
+];
+
 const emptyMessage = "Enter text or a URL to generate a QR code.";
 const copySuccessMessage = "Copied QR code to your clipboard.";
 const copyErrorMessage =
@@ -352,20 +370,6 @@ const setStoredTheme = (theme) => {
   }
 };
 
-const savedTheme = getStoredTheme();
-const supportsMatchMedia = typeof window.matchMedia === "function";
-const preferredTheme =
-  savedTheme ||
-  (supportsMatchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light");
-applyTheme(preferredTheme);
-
-initColorInputs();
-
-renderMessage(emptyMessage);
-updateButtonState();
-
 const maybeAutoGenerate = () => {
   updateButtonState();
   if (autoGenerateToggle.checked && urlInput.value.trim()) {
@@ -382,62 +386,95 @@ const handleManualGenerate = () => {
   updateButtonState();
 };
 
-attachEvent(urlInput, "input", () => {
-  updateFilenameFromInput();
-  maybeAutoGenerate();
-});
-attachEvent(filenameInput, "input", () => {
-  filenameInput.dataset.customized = "true";
-});
-attachEvent(urlInput, "keydown", (event) => {
-  if (event.isComposing || event.key !== "Enter") {
-    return;
-  }
-  if (!urlInput.value.trim()) {
-    return;
-  }
-  event.preventDefault();
-  handleManualGenerate();
-});
-attachEvent(generateButton, "click", handleManualGenerate);
-attachEvent(downloadButton, "click", downloadQRCode);
-attachEvent(copyButton, "click", copyQRCode);
-attachEvent(copyTextButton, "click", copyInputText);
-attachEvent(clearOutputButton, "click", clearOutputOnly);
-attachEvent(clearInputButton, "click", clearInputAndOutput);
-attachEvent(resetButton, "click", resetOptions);
-attachEvent(themeToggle, "click", () => {
-  const nextTheme = document.body.classList.contains("dark-mode")
-    ? "light"
-    : "dark";
-  setStoredTheme(nextTheme);
-  applyTheme(nextTheme);
-  trackEvent("toggle_theme", { theme: nextTheme });
-});
-
 const markCustomColor = () => {
   foregroundColor.dataset.custom = "true";
   backgroundColor.dataset.custom = "true";
 };
 
-[foregroundColor, backgroundColor].forEach((input) => {
-  attachEvent(input, "input", () => {
-    markCustomColor();
-    if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
-      renderQRCode("update");
-    }
-  });
-});
+const initializeApp = () => {
+  const missingRequiredElements = requiredElements
+    .filter(([, element]) => !element)
+    .map(([selector]) => selector);
 
-[sizeSelect, errorSelect].forEach((input) => {
-  attachEvent(input, "input", () => {
-    if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
-      renderQRCode("update");
-    }
-  });
-});
+  if (missingRequiredElements.length > 0) {
+    console.warn(
+      `SimpleQR initialization skipped. Missing required element(s): ${missingRequiredElements.join(", ")}.`,
+    );
+    return;
+  }
 
-attachEvent(autoGenerateToggle, "change", (event) => {
-  maybeAutoGenerate();
-  trackEvent("toggle_auto_generate", { enabled: event.target.checked });
-});
+  const savedTheme = getStoredTheme();
+  const supportsMatchMedia = typeof window.matchMedia === "function";
+  const preferredTheme =
+    savedTheme ||
+    (supportsMatchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light");
+  applyTheme(preferredTheme);
+
+  initColorInputs();
+
+  renderMessage(emptyMessage);
+  updateButtonState();
+
+  attachEvent(urlInput, "input", () => {
+    updateFilenameFromInput();
+    maybeAutoGenerate();
+  });
+  attachEvent(filenameInput, "input", () => {
+    filenameInput.dataset.customized = "true";
+  });
+  attachEvent(urlInput, "keydown", (event) => {
+    if (event.isComposing || event.key !== "Enter") {
+      return;
+    }
+    if (!urlInput.value.trim()) {
+      return;
+    }
+    event.preventDefault();
+    handleManualGenerate();
+  });
+  attachEvent(generateButton, "click", handleManualGenerate);
+  attachEvent(downloadButton, "click", downloadQRCode);
+  attachEvent(copyButton, "click", copyQRCode);
+  attachEvent(copyTextButton, "click", copyInputText);
+  attachEvent(clearOutputButton, "click", clearOutputOnly);
+  attachEvent(clearInputButton, "click", clearInputAndOutput);
+  attachEvent(resetButton, "click", resetOptions);
+  attachEvent(themeToggle, "click", () => {
+    const nextTheme = document.body.classList.contains("dark-mode")
+      ? "light"
+      : "dark";
+    setStoredTheme(nextTheme);
+    applyTheme(nextTheme);
+    trackEvent("toggle_theme", { theme: nextTheme });
+  });
+
+  [foregroundColor, backgroundColor].forEach((input) => {
+    attachEvent(input, "input", () => {
+      markCustomColor();
+      if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
+        renderQRCode("update");
+      }
+    });
+  });
+
+  [sizeSelect, errorSelect].forEach((input) => {
+    attachEvent(input, "input", () => {
+      if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
+        renderQRCode("update");
+      }
+    });
+  });
+
+  attachEvent(autoGenerateToggle, "change", (event) => {
+    maybeAutoGenerate();
+    trackEvent("toggle_auto_generate", { enabled: event.target.checked });
+  });
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeApp, { once: true });
+} else {
+  initializeApp();
+}
