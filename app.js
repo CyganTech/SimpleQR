@@ -311,6 +311,15 @@ const maybeAutoGenerate = () => {
   }
 };
 
+const handleManualGenerate = () => {
+  if (!urlInput.value.trim()) {
+    updateButtonState();
+    return;
+  }
+  renderQRCode("manual");
+  updateButtonState();
+};
+
 urlInput.addEventListener("input", () => {
   updateFilenameFromInput();
   maybeAutoGenerate();
@@ -318,7 +327,17 @@ urlInput.addEventListener("input", () => {
 filenameInput.addEventListener("input", () => {
   filenameInput.dataset.customized = "true";
 });
-generateButton.addEventListener("click", () => renderQRCode("manual"));
+urlInput.addEventListener("keydown", (event) => {
+  if (event.isComposing || event.key !== "Enter") {
+    return;
+  }
+  if (!urlInput.value.trim()) {
+    return;
+  }
+  event.preventDefault();
+  handleManualGenerate();
+});
+generateButton.addEventListener("click", handleManualGenerate);
 downloadButton.addEventListener("click", downloadQRCode);
 copyButton.addEventListener("click", copyQRCode);
 copyTextButton.addEventListener("click", copyInputText);
