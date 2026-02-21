@@ -322,10 +322,27 @@ const applyTheme = (theme) => {
   }
 };
 
-const savedTheme = localStorage.getItem(themeStorageKey);
+const getStoredTheme = () => {
+  try {
+    return window.localStorage.getItem(themeStorageKey);
+  } catch (error) {
+    return null;
+  }
+};
+
+const setStoredTheme = (theme) => {
+  try {
+    window.localStorage.setItem(themeStorageKey, theme);
+  } catch (error) {
+    // Ignore storage failures (for example, blocked or unavailable storage).
+  }
+};
+
+const savedTheme = getStoredTheme();
+const supportsMatchMedia = typeof window.matchMedia === "function";
 const preferredTheme =
   savedTheme ||
-  (window.matchMedia("(prefers-color-scheme: dark)").matches
+  (supportsMatchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light");
 applyTheme(preferredTheme);
@@ -379,7 +396,7 @@ themeToggle.addEventListener("click", () => {
   const nextTheme = document.body.classList.contains("dark-mode")
     ? "light"
     : "dark";
-  localStorage.setItem(themeStorageKey, nextTheme);
+  setStoredTheme(nextTheme);
   applyTheme(nextTheme);
   trackEvent("toggle_theme", { theme: nextTheme });
 });
