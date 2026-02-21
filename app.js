@@ -1,7 +1,8 @@
 const urlInput = document.getElementById("url-input");
 const generateButton = document.getElementById("generate-button");
 const downloadButton = document.getElementById("download-button");
-const clearButton = document.getElementById("clear-button");
+const clearOutputButton = document.getElementById("clear-output-button");
+const clearInputButton = document.getElementById("clear-input-button");
 const themeToggle = document.getElementById("theme-toggle");
 const themeToggleLabel = document.getElementById("theme-toggle-label");
 const sizeSelect = document.getElementById("size-select");
@@ -66,11 +67,13 @@ const updateButtonState = () => {
   const value = urlInput.value.trim();
   const hasValue = value.length > 0;
   generateButton.disabled = !hasValue;
-  clearButton.disabled = !hasValue && !currentQRCode;
-  downloadButton.disabled = !currentQRCode;
-  copyButton.disabled = !currentQRCode;
+  const hasQRCode = Boolean(currentQRCode);
+  clearInputButton.disabled = !hasValue && !hasQRCode;
+  clearOutputButton.disabled = !hasQRCode;
+  downloadButton.disabled = !hasQRCode;
+  copyButton.disabled = !hasQRCode;
   copyTextButton.disabled = !hasValue;
-  if (!hasValue && !currentQRCode) {
+  if (!hasValue && !hasQRCode) {
     renderMessage(emptyMessage);
   }
 };
@@ -100,7 +103,8 @@ const renderQRCode = (source = "manual") => {
     correctLevel: getErrorCorrectionLevel(),
   });
   downloadButton.disabled = false;
-  clearButton.disabled = false;
+  clearOutputButton.disabled = false;
+  clearInputButton.disabled = false;
   copyButton.disabled = false;
   renderStatus("");
   trackEvent("generate_qr", {
@@ -239,13 +243,40 @@ const copyInputText = async () => {
   }
 };
 
-const clearQRCode = () => {
-  urlInput.value = "";
+const clearOutputOnly = () => {
+  if (!currentQRCode) {
+    renderStatus("No QR code to clear.");
+    updateButtonState();
+    return;
+  }
+
   currentQRCode = null;
   renderMessage(emptyMessage);
-  renderStatus("");
+  renderStatus("Cleared rendered QR code.");
   updateButtonState();
-  trackEvent("clear_qr");
+  trackEvent("clear_output_only");
+};
+
+const clearInputAndOutput = () => {
+  const hadInput = urlInput.value.trim().length > 0;
+  const hadOutput = Boolean(currentQRCode);
+
+  if (!hadInput && !hadOutput) {
+    renderStatus("Nothing to clear.");
+    updateButtonState();
+    return;
+  }
+
+  urlInput.value = "";
+  currentQRCode = null;
+  updateFilenameFromInput();
+  renderMessage(emptyMessage);
+  renderStatus("Cleared input text and rendered QR code.");
+  updateButtonState();
+  trackEvent("clear_input_and_output", {
+    cleared_input: hadInput,
+    cleared_output: hadOutput,
+  });
 };
 
 const resetOptions = () => {
@@ -341,7 +372,8 @@ generateButton.addEventListener("click", handleManualGenerate);
 downloadButton.addEventListener("click", downloadQRCode);
 copyButton.addEventListener("click", copyQRCode);
 copyTextButton.addEventListener("click", copyInputText);
-clearButton.addEventListener("click", clearQRCode);
+clearOutputButton.addEventListener("click", clearOutputOnly);
+clearInputButton.addEventListener("click", clearInputAndOutput);
 resetButton.addEventListener("click", resetOptions);
 themeToggle.addEventListener("click", () => {
   const nextTheme = document.body.classList.contains("dark-mode")
