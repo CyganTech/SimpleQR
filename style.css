@@ -114,13 +114,31 @@ body {
   font-size: 1.2rem;
 }
 
-.seo-content h3 {
-  margin-top: 12px;
-  font-size: 1rem;
+.seo-content > p {
+  margin: 8px 0 0;
+  color: var(--muted);
 }
 
-.seo-content p {
-  margin: 8px 0 0;
+.faq-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.faq-item {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card-bg), var(--bg) 22%);
+}
+
+.faq-item h3 {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.faq-item p {
+  margin: 6px 0 0;
   color: var(--muted);
 }
 
