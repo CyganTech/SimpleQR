@@ -75,11 +75,12 @@ body {
   width: min(520px, 100%);
   display: grid;
   gap: 12px;
+  justify-items: center;
 }
 
 .origin-note {
   margin: 4px 0 0;
-  width: min(520px, 100%);
+  width: 100%;
   text-align: center;
   color: var(--muted);
   font-size: 0.88rem;
@@ -98,7 +99,7 @@ body {
 }
 
 .seo-content {
-  width: min(520px, 100%);
+  width: 100%;
   padding: 20px;
   border-radius: 14px;
   border: 1px solid var(--border);
@@ -391,7 +392,7 @@ input[type="color"]:focus-visible {
   .origin-note,
   .seo-content {
     width: 100%;
-    text-align: left;
+    text-align: center;
   }
 }
 
