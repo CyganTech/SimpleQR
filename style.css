@@ -70,6 +70,13 @@ body {
   gap: 16px;
 }
 
+
+.info-panel {
+  width: min(520px, 100%);
+  display: grid;
+  gap: 12px;
+}
+
 .origin-note {
   margin: 4px 0 0;
   width: min(520px, 100%);
@@ -340,6 +347,39 @@ input[type="color"]:focus-visible {
   margin: 0;
 }
 
+
+@media (min-width: 1024px) {
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 40px 28px;
+    display: grid;
+    grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+    align-items: start;
+    justify-content: center;
+    column-gap: 48px;
+    row-gap: 16px;
+  }
+
+  .card {
+    width: 100%;
+    position: sticky;
+    top: 24px;
+  }
+
+  .info-panel {
+    width: 100%;
+    max-width: 720px;
+    align-self: center;
+  }
+
+  .origin-note,
+  .seo-content {
+    width: 100%;
+    text-align: left;
+  }
+}
+
 @media (max-width: 520px) {
   .page {
     align-items: flex-start;
@@ -349,6 +389,10 @@ input[type="color"]:focus-visible {
   .card {
     padding: 18px;
     gap: 12px;
+  }
+
+  .info-panel {
+    width: 100%;
   }
 
   .seo-content {
