@@ -41,7 +41,7 @@ const copyErrorMessage =
   "Unable to copy image. Use HTTPS or localhost, or use Download PNG instead.";
 const copyTextSuccessMessage = "Copied text to your clipboard.";
 const copyTextErrorMessage =
-  "Unable to copy text. Use HTTPS or localhost, or use Download PNG if copy is unavailable.";
+  "Unable to copy text. Use HTTPS or localhost, or select and copy manually.";
 const qrDependencyErrorMessage =
   "QR code generator failed to load. Check your connection and refresh.";
 const themeStorageKey = "simpleqr-theme";
@@ -261,7 +261,7 @@ const copyInputText = async () => {
   }
   if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
     renderStatus(
-      "Copy text is unavailable in this browser context. Use HTTPS or localhost, or use Download PNG if copy is unavailable.",
+      "Copy text is unavailable in this browser context. Use HTTPS or localhost, or select and copy manually.",
     );
     return;
   }
