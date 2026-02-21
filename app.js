@@ -50,7 +50,21 @@ const renderMessage = (message) => {
 };
 
 const renderStatus = (message) => {
-  statusMessage.textContent = message;
+  if (statusMessage) {
+    statusMessage.textContent = message;
+  }
+};
+
+const setDisabled = (element, disabled) => {
+  if (element) {
+    element.disabled = disabled;
+  }
+};
+
+const attachEvent = (element, eventName, handler) => {
+  if (element) {
+    element.addEventListener(eventName, handler);
+  }
 };
 
 const getQRColors = () => ({
@@ -66,13 +80,13 @@ const getErrorCorrectionLevel = () =>
 const updateButtonState = () => {
   const value = urlInput.value.trim();
   const hasValue = value.length > 0;
-  generateButton.disabled = !hasValue;
+  setDisabled(generateButton, !hasValue);
   const hasQRCode = Boolean(currentQRCode);
-  clearInputButton.disabled = !hasValue && !hasQRCode;
-  clearOutputButton.disabled = !hasQRCode;
-  downloadButton.disabled = !hasQRCode;
-  copyButton.disabled = !hasQRCode;
-  copyTextButton.disabled = !hasValue;
+  setDisabled(clearInputButton, !hasValue && !hasQRCode);
+  setDisabled(clearOutputButton, !hasQRCode);
+  setDisabled(downloadButton, !hasQRCode);
+  setDisabled(copyButton, !hasQRCode);
+  setDisabled(copyTextButton, !hasValue);
   if (!hasValue && !hasQRCode) {
     renderMessage(emptyMessage);
   }
@@ -102,10 +116,10 @@ const renderQRCode = (source = "manual") => {
     colorLight,
     correctLevel: getErrorCorrectionLevel(),
   });
-  downloadButton.disabled = false;
-  clearOutputButton.disabled = false;
-  clearInputButton.disabled = false;
-  copyButton.disabled = false;
+  setDisabled(downloadButton, false);
+  setDisabled(clearOutputButton, false);
+  setDisabled(clearInputButton, false);
+  setDisabled(copyButton, false);
   renderStatus("");
   trackEvent("generate_qr", {
     source,
@@ -368,14 +382,14 @@ const handleManualGenerate = () => {
   updateButtonState();
 };
 
-urlInput.addEventListener("input", () => {
+attachEvent(urlInput, "input", () => {
   updateFilenameFromInput();
   maybeAutoGenerate();
 });
-filenameInput.addEventListener("input", () => {
+attachEvent(filenameInput, "input", () => {
   filenameInput.dataset.customized = "true";
 });
-urlInput.addEventListener("keydown", (event) => {
+attachEvent(urlInput, "keydown", (event) => {
   if (event.isComposing || event.key !== "Enter") {
     return;
   }
@@ -385,14 +399,14 @@ urlInput.addEventListener("keydown", (event) => {
   event.preventDefault();
   handleManualGenerate();
 });
-generateButton.addEventListener("click", handleManualGenerate);
-downloadButton.addEventListener("click", downloadQRCode);
-copyButton.addEventListener("click", copyQRCode);
-copyTextButton.addEventListener("click", copyInputText);
-clearOutputButton.addEventListener("click", clearOutputOnly);
-clearInputButton.addEventListener("click", clearInputAndOutput);
-resetButton.addEventListener("click", resetOptions);
-themeToggle.addEventListener("click", () => {
+attachEvent(generateButton, "click", handleManualGenerate);
+attachEvent(downloadButton, "click", downloadQRCode);
+attachEvent(copyButton, "click", copyQRCode);
+attachEvent(copyTextButton, "click", copyInputText);
+attachEvent(clearOutputButton, "click", clearOutputOnly);
+attachEvent(clearInputButton, "click", clearInputAndOutput);
+attachEvent(resetButton, "click", resetOptions);
+attachEvent(themeToggle, "click", () => {
   const nextTheme = document.body.classList.contains("dark-mode")
     ? "light"
     : "dark";
@@ -407,7 +421,7 @@ const markCustomColor = () => {
 };
 
 [foregroundColor, backgroundColor].forEach((input) => {
-  input.addEventListener("input", () => {
+  attachEvent(input, "input", () => {
     markCustomColor();
     if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
       renderQRCode("update");
@@ -416,14 +430,14 @@ const markCustomColor = () => {
 });
 
 [sizeSelect, errorSelect].forEach((input) => {
-  input.addEventListener("input", () => {
+  attachEvent(input, "input", () => {
     if (currentQRCode || (autoGenerateToggle.checked && urlInput.value.trim())) {
       renderQRCode("update");
     }
   });
 });
 
-autoGenerateToggle.addEventListener("change", (event) => {
+attachEvent(autoGenerateToggle, "change", (event) => {
   maybeAutoGenerate();
   trackEvent("toggle_auto_generate", { enabled: event.target.checked });
 });
