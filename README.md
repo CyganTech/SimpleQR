@@ -176,4 +176,4 @@ privacy statement is included in `PRIVACY.md` for usage/popularity tracking.
 
 ## Dependencies
 - The QR code renderer is provided by the [`qrcodejs`](https://www.npmjs.com/package/qrcodejs) library.
-- It is loaded via CDN from `https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js` in `index.html`. If the CDN fails, the page falls back to the bundled `qrcode.min.js`. For fully offline usage, keep the local file and remove the CDN script tag.
+- It is loaded via CDN from `https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js` in `index.html`. If the CDN fails, the page falls back to the bundled `qrcode.min.js` via the script `onerror` handler. The app also retries by dynamically loading the local bundle at runtime if QR generation is triggered before the dependency is available. For fully offline usage, keep the local file and remove the CDN script tag.

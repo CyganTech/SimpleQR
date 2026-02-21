@@ -53,8 +53,10 @@ const defaultSettings = {
   filename: "",
   autoGenerate: false,
 };
+const localQRCodeScriptSource = "qrcode.min.js?v=3b2bd5d";
 
 let currentQRCode = null;
+let qrDependencyLoadPromise = null;
 
 const debounce = (callback, delay = 200) => {
   let timeoutId;
@@ -117,6 +119,28 @@ const getQRSize = () => Number.parseInt(sizeSelect.value, 10);
 const getErrorCorrectionLevel = () =>
   QRCode.CorrectLevel[errorSelect.value] ?? QRCode.CorrectLevel.M;
 
+const ensureQRCodeDependency = async () => {
+  if (typeof QRCode !== "undefined") {
+    return true;
+  }
+
+  if (!qrDependencyLoadPromise) {
+    qrDependencyLoadPromise = new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = localQRCodeScriptSource;
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.head.append(script);
+    }).finally(() => {
+      qrDependencyLoadPromise = null;
+    });
+  }
+
+  const loaded = await qrDependencyLoadPromise;
+  return loaded && typeof QRCode !== "undefined";
+};
+
 const updateButtonState = () => {
   const value = urlInput.value.trim();
   const hasValue = value.length > 0;
@@ -132,15 +156,18 @@ const updateButtonState = () => {
   }
 };
 
-const renderQRCode = (source = "manual") => {
+const renderQRCode = async (source = "manual") => {
   const value = urlInput.value.trim();
   if (!value) {
     renderMessage(emptyMessage, true);
     return;
   }
   if (typeof QRCode === "undefined") {
-    renderStatus(qrDependencyErrorMessage);
-    return;
+    const dependencyLoaded = await ensureQRCodeDependency();
+    if (!dependencyLoaded) {
+      renderStatus(qrDependencyErrorMessage);
+      return;
+    }
   }
 
   output.innerHTML = "";
