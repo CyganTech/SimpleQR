@@ -350,27 +350,24 @@ input[type="color"]:focus-visible {
 
 @media (min-width: 1024px) {
   .page {
-    max-width: 1180px;
+    width: min(980px, 100%);
     margin: 0 auto;
-    padding: 40px 28px;
-    display: grid;
-    grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
-    align-items: start;
-    justify-content: center;
-    column-gap: 48px;
-    row-gap: 16px;
+    padding: 40px 28px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
   }
 
   .card {
     width: 100%;
-    position: sticky;
-    top: 24px;
+    max-width: 920px;
   }
 
   .info-panel {
     width: 100%;
-    max-width: 720px;
-    align-self: center;
+    max-width: 920px;
   }
 
   .origin-note,
