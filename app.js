@@ -18,9 +18,11 @@ const output = document.querySelector(".output");
 
 const emptyMessage = "Enter text or a URL to generate a QR code.";
 const copySuccessMessage = "Copied QR code to your clipboard.";
-const copyErrorMessage = "Unable to copy. Try downloading instead.";
+const copyErrorMessage =
+  "Unable to copy image. Use HTTPS or localhost, or use Download PNG instead.";
 const copyTextSuccessMessage = "Copied text to your clipboard.";
-const copyTextErrorMessage = "Unable to copy text. Please try again.";
+const copyTextErrorMessage =
+  "Unable to copy text. Use HTTPS or localhost, or use Download PNG if copy is unavailable.";
 const qrDependencyErrorMessage =
   "QR code generator failed to load. Check your connection and refresh.";
 const themeStorageKey = "simpleqr-theme";
@@ -184,6 +186,19 @@ const downloadQRCode = () => {
 };
 
 const copyQRCode = async () => {
+  if (!navigator.clipboard) {
+    renderStatus(
+      "Copy image is unavailable in this browser context. Use HTTPS or localhost, or use Download PNG instead.",
+    );
+    return;
+  }
+  if (!window.ClipboardItem || typeof navigator.clipboard.write !== "function") {
+    renderStatus(
+      "Copy image is not supported by this browser. Use Download PNG instead.",
+    );
+    return;
+  }
+
   try {
     const blob = await getQRCodeBlob();
     if (!blob) {
@@ -208,6 +223,13 @@ const copyInputText = async () => {
     renderStatus(emptyMessage);
     return;
   }
+  if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
+    renderStatus(
+      "Copy text is unavailable in this browser context. Use HTTPS or localhost, or use Download PNG if copy is unavailable.",
+    );
+    return;
+  }
+
   try {
     await navigator.clipboard.writeText(value);
     renderStatus(copyTextSuccessMessage);
