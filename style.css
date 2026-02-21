@@ -349,7 +349,7 @@ input[type="color"]:focus-visible {
   }
 }
 
-@media (max-width: 640px) {
+@media (min-width: 521px) and (max-width: 640px) {
   .actions {
     gap: 10px;
   }
