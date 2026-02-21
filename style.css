@@ -175,9 +175,15 @@ button:disabled {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 44px;
   min-height: 44px;
+  min-width: 44px;
   padding: 10px 14px;
+  white-space: normal;
+  text-align: center;
+}
+
+.icon-button .button-label {
+  line-height: 1.2;
 }
 
 .icon-button--primary {
@@ -305,5 +311,17 @@ input[type="color"]:focus-visible {
 
   button {
     width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .actions {
+    gap: 10px;
+  }
+
+  .actions .icon-button {
+    flex: 1 1 calc(50% - 10px);
+    min-width: 120px;
+    justify-content: center;
   }
 }
