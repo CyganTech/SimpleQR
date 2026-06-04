@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://qr.cyganlabs.com/sitemap.xml
+
+# Content Signals
+# search: yes
+# ai-input: yes
+# ai-train: no
